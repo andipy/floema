@@ -5,7 +5,7 @@ const path = require("path");
 const app = express();
 const port = 3000;
 
-//const fetch = require("node-fetch");
+const fetch = require("node-fetch");
 const Prismic = require("@prismicio/client");
 const PrismicH = require("@prismicio/helpers");
 
