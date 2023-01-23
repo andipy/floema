@@ -17,22 +17,22 @@ const initApi = (req) => {
     });
 };
 
-const handleLinkResolver = (doc) => {
-    if (doc.type === 'product') {
-      return `/detail/${doc.slug}`;
-    }
+// const handleLinkResolver = (doc) => {
+//     if (doc.type === 'product') {
+//       return `/detail/${doc.slug}`;
+//     }
   
-    if (doc.type === 'collections') {
-      return '/collections';
-    }
+//     if (doc.type === 'collections') {
+//       return '/collections';
+//     }
   
-    if (doc.type === 'about') {
-      return `/about`;
-    }
+//     if (doc.type === 'about') {
+//       return `/about`;
+//     }
   
-    // Default to homepage
-    return '/';
-};
+//     // Default to homepage
+//     return '/';
+// };
 
 // app.use((req, res, next) => {
 //     res.locals.ctx = {
@@ -55,7 +55,8 @@ app.set("views", path.join(__dirname, "views"));
 
 app.get('/', async (req, res) => {
     // Here we are retrieving the first document from your API endpoint
-    const document = await client.getFirst()
+    const document = await initApi();
+    console.log(document, "from api call");
     res.render('pages/home', { document })
 })
 
