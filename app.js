@@ -62,24 +62,32 @@ app.set("view engine", "pug");
 app.set("views", path.join(__dirname, "views"));
 
 app.get('/', (req, res) => {
-  initApi(req).then((api) => {
-    api.get({
-      predicates: Prismic.predicate.at("document.type", "home")
-    }).then((response) => {
-      res.render('pages/home', { 
-        document: response.results[0]
-      });
-    })
-  });
+  // initApi(req).then((api) => {
+  //   api.get({
+  //     predicates: Prismic.predicate.at("document.type", "home")
+  //   }).then((response) => {
+  //     res.render('pages/home', { 
+  //       document: response.results[0]
+  //     });
+  //   })
+  // });
+  res.render('pages/home');
 });
 
 app.get('/about', (req, res) => {
   initApi(req).then((api) => {
     api.get({
-      predicates: Prismic.predicate.at("document.type", "about")
+      predicates: Prismic.predicate.any("document.type", ["meta", "about"])
     }).then((response) => {
-      res.render('pages/about', { 
-        document: response.results[0]
+
+      const { results } = response;
+      const [ meta, about ] = results;
+
+      console.log(meta, "meta");
+
+      res.render('pages/about', {
+        about,
+        meta
       });
     })
   });
