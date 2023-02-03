@@ -52,9 +52,10 @@ const initApi = async (req) => {
 // };
 
 app.use((req, res, next) => {
-  res.locals.ctx = {
-    PrismicH,
-  }
+  // res.locals.ctx = {
+  //   PrismicH,
+  // }
+  res.locals.PrismicH = PrismicH;
   next()
 })
 
@@ -83,7 +84,7 @@ app.get('/about', (req, res) => {
       const { results } = response;
       const [ meta, about ] = results;
 
-      console.log(meta, "meta");
+      console.log(about.data.body, "about data body");
 
       res.render('pages/about', {
         about,
