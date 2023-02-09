@@ -1,6 +1,7 @@
 require("dotenv").config();
 
 const express = require("express");
+const errorHandler = require('errorhandler');
 const path = require("path");
 const app = express();
 const port = 3000;
@@ -51,6 +52,8 @@ const initApi = async (req) => {
 //     return '/';
 // };
 
+app.use(errorHandler());
+
 app.use((req, res, next) => {
   // res.locals.ctx = {
   //   PrismicH,
@@ -84,8 +87,6 @@ app.get('/about', (req, res) => {
       const { results } = response;
       const [ meta, about ] = results;
 
-      console.log(about.data.body, "about data body");
-
       res.render('pages/about', {
         about,
         meta
@@ -94,12 +95,40 @@ app.get('/about', (req, res) => {
   });
 });
 
-app.get('/collections', (req, res) => {
-    res.render("pages/collections");
+app.get('/collections', async (req, res) => {
+    const api = await initApi(req);
+    const home = await api.getSingle("home");
+    const meta = await api.getSingle("meta");
+    const { results: collections } = await api.get({
+      predicates: Prismic.predicate.at("document.type", "collection"),
+      fetchLinks: "product.model"
+    });
+
+    res.render('pages/collections', {
+      collections,
+      home,
+      meta
+    });
+
+    console.log(collections, "collectionsss")
+    collections.forEach(coll => {
+      console.log(coll.data.products[0].products_product, "collami")
+    })
+
 });
 
-app.get('/detail/:id', (req, res) => {
-    res.render("pages/detail");
+app.get('/detail/:uid', async (req, res) => {
+    const api = await initApi(req);
+    const meta = await api.getSingle("meta");
+    const product = await api.getByUID("product", req.params.uid, {
+      fetchLinks: "collection.title"
+    });
+    
+    res.render('pages/detail', {
+      product,
+      meta
+    });
+    
 });
 
 app.listen(port, () => {
