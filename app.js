@@ -2,6 +2,10 @@ require("dotenv").config();
 
 const express = require("express");
 const errorHandler = require('errorhandler');
+const bodyParser = require("body-parser");
+const methodOverride = require("method-override");
+const logger = require("morgan");
+
 const path = require("path");
 const app = express();
 const port = 3000;
@@ -10,125 +14,116 @@ const fetch = require("node-fetch");
 const Prismic = require("@prismicio/client");
 const PrismicH = require("@prismicio/helpers");
 
-const routes = [
-  {
-    type: "page",
-    path: "/"
-  },{
-    type: "page",
-    path: "/about"
-  },{
-    type: "page",
-    path: "/collections"
-  },{
-    type: "page",
-    path: "/detail/:id"
-  },
-]
+app.use(logger('dev'));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(methodOverride());
+app.use(errorHandler());
 
 const initApi = async (req) => {
   return Prismic.createClient(process.env.PRISMIC_ENDPOINT, {
     accessToken: process.env.PRISMIC_ACCESS_TOKEN,
-    // routes,
     req,
     fetch
   });
 }
 
-// const handleLinkResolver = (doc) => {
-//     if (doc.type === 'product') {
-//       return `/detail/${doc.slug}`;
-//     }
-  
-//     if (doc.type === 'collections') {
-//       return '/collections';
-//     }
-  
-//     if (doc.type === 'about') {
-//       return `/about`;
-//     }
-  
-//     // Default to homepage
-//     return '/';
-// };
+const handleLinkResolver = (doc) => {
+    if (doc.type === 'product') {
+      return `/detail/${doc.slug}`;
+    }
 
-app.use(errorHandler());
+    if (doc.type === 'collections') {
+      return `/collections`;
+    }
+    
+    if (doc.type === 'about') {
+      return `/about`;
+    }
+    
+    // Default to homepage
+    return '/';
+};
+
 
 app.use((req, res, next) => {
-  // res.locals.ctx = {
-  //   PrismicH,
-  // }
-  res.locals.PrismicH = PrismicH;
-  next()
+    res.locals.PrismicH = PrismicH;
+    res.locals.Link = handleLinkResolver
+    next()
 })
 
 app.set("view engine", "pug");
 app.set("views", path.join(__dirname, "views"));
 
-app.get('/', (req, res) => {
-  // initApi(req).then((api) => {
-  //   api.get({
-  //     predicates: Prismic.predicate.at("document.type", "home")
-  //   }).then((response) => {
-  //     res.render('pages/home', { 
-  //       document: response.results[0]
-  //     });
-  //   })
-  // });
-  res.render('pages/home');
+const handleRequest = async (api) => {
+    const meta = await api.getSingle("meta");
+    const navigation = await api.getSingle("navigation");  
+    const preloader = await api.getSingle("preloader");
+
+    return {
+      meta,
+      navigation,
+      preloader
+    }
+}
+
+app.get('/', async (req, res) => {
+    const api = await initApi(req);
+    const defaults = await handleRequest(api);
+    const home = await api.getSingle("home");
+
+    const { results: collections } = await api.get({
+      predicates: Prismic.predicate.at("document.type", "collection"),
+      fetchLinks: "product.model"
+    });
+
+    res.render('pages/home', {
+      ...defaults,
+      collections,
+      home
+    });
 });
 
-app.get('/about', (req, res) => {
-  initApi(req).then((api) => {
-    api.get({
-      predicates: Prismic.predicate.any("document.type", ["meta", "about"])
-    }).then((response) => {
+app.get('/about', async (req, res) => {
+    const api = await initApi(req);
+    const defaults = await handleRequest(api);
+    const about = await api.getSingle("about");
 
-      const { results } = response;
-      const [ meta, about ] = results;
-
-      res.render('pages/about', {
-        about,
-        meta
-      });
-    })
-  });
+    res.render('pages/about', {
+      ...defaults,
+      about
+    });
 });
 
 app.get('/collections', async (req, res) => {
-    const api = await initApi(req);
+    const api = await initApi(req);    
+    const defaults = await handleRequest(api);
     const home = await api.getSingle("home");
-    const meta = await api.getSingle("meta");
+
     const { results: collections } = await api.get({
       predicates: Prismic.predicate.at("document.type", "collection"),
       fetchLinks: "product.model"
     });
 
     res.render('pages/collections', {
+      ...defaults,
       collections,
-      home,
-      meta
+      home
     });
-
-    console.log(collections, "collectionsss")
-    collections.forEach(coll => {
-      console.log(coll.data.products[0].products_product, "collami")
-    })
-
 });
 
 app.get('/detail/:uid', async (req, res) => {
     const api = await initApi(req);
-    const meta = await api.getSingle("meta");
+    const defaults = await handleRequest(api);
+
     const product = await api.getByUID("product", req.params.uid, {
       fetchLinks: "collection.title"
     });
     
     res.render('pages/detail', {
-      product,
-      meta
-    });
-    
+      ...defaults,
+      product
+    });    
 });
 
 app.listen(port, () => {
