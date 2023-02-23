@@ -1,13 +1,13 @@
 require("dotenv").config();
 
+const logger = require("morgan");
 const express = require("express");
 const errorHandler = require('errorhandler');
 const bodyParser = require("body-parser");
 const methodOverride = require("method-override");
-const logger = require("morgan");
 
-const path = require("path");
 const app = express();
+const path = require("path");
 const port = 3000;
 
 const fetch = require("node-fetch");

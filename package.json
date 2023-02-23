@@ -26,6 +26,7 @@
     "imagemin-jpegtran": "^7.0.0",
     "imagemin-optipng": "^8.0.0",
     "imagemin-svgo": "^10.0.1",
+    "include-media": "^2.0.0",
     "mini-css-extract-plugin": "^2.7.2",
     "node-fetch": "^2.6.7",
     "nodemon": "^2.0.20",
