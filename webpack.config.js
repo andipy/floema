@@ -103,11 +103,9 @@ module.exports = {
 
             {
                 test: /\.(jpe?g|png|gif|svg|woff2?|fnt|webp)$/,
-                loader: "file-loader",
-                options: {
-                    name(file) {
-                        return "[name].[hash].[ext]"
-                    }
+                type: 'asset/resource',
+                generator: {
+                    filename: '[name].[hash].[ext]'
                 }
             },
 
