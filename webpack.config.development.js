@@ -9,14 +9,14 @@ module.exports = merge(config, {
     devtool: "inline-source-map",
 
     devServer: {
-        static: {
-          directory: path.join(__dirname, "public"),
+        devMiddleware: {
+          writeToDisk: true,
         },
-        compress: true,
-        port: 9000,
     },
-
+    
     output: {
-        path: path.resolve(__dirname, "public")
+        path: path.resolve(__dirname, 'public'),
+        assetModuleFilename: '[name][ext]',
+        clean: true,
     }
 })
