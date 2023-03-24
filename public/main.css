@@ -66,28 +66,28 @@ body {
 
 @font-face {
   font-family: "George X";
-  src: url(george-x-regular.woff2) format("woff2"), url(george-x-regular.woff) format("woff");
+  src: url(george-x-regular.a4a8eb53627b3d1a4201..woff2) format("woff2"), url(george-x-regular.309bcc58a57b38d7fbf6..woff) format("woff");
   font-weight: normal;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: "Suisse BP";
-  src: url(suisse-bp-regular.woff2) format("woff2"), url(suisse-bp-regular.woff) format("woff");
+  src: url(suisse-bp-regular.0e6b7bf4aefb74735816..woff2) format("woff2"), url(suisse-bp-regular.65915d9417a4a6661e27..woff) format("woff");
   font-weight: normal;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: "Suisse BP";
-  src: url(suisse-bp-light.woff2) format("woff2"), url(suisse-bp-light.woff) format("woff");
+  src: url(suisse-bp-light.fa32cf40d8b3cb0a9a0e..woff2) format("woff2"), url(suisse-bp-light.98ccc5d5390b7fe7a79c..woff) format("woff");
   font-weight: 300;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: "Suisse BP";
-  src: url(suisse-bp-ultra-light.woff2) format("woff2"), url(suisse-bp-ultra-light.woff) format("woff");
+  src: url(suisse-bp-ultra-light.c186d81e6e7f1863599b..woff2) format("woff2"), url(suisse-bp-ultra-light.03ccdb4fca57bb51c559..woff) format("woff");
   font-weight: 200;
   font-style: normal;
   font-display: swap;
